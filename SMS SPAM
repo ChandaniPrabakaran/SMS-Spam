@@ -1,0 +1,85 @@
+!pip install --upgrade nltk
+!pip install --upgrade scikit-learn
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+import warnings
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np 
+import pandas as pd
+import re
+import nltk!pip install --upgrade nltk
+!pip install --upgrade scikit-learn
+
+from math import *
+from matplotlib.colors import ListedColormap
+
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+
+from sklearn import metrics
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.pipeline import Pipeline    
+from sklearn.metrics import precision_score, recall_score, confusion_matrix, classification_report, accuracy_score, f1_score
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+
+df = pd.read_csv("/kaggle/input/sms-spam-collection-dataset/spam.csv", encoding='latin1')
+
+df.info()
+
+df
+
+drop_col_list = ["Unnamed: 2","Unnamed: 3","Unnamed: 4"]
+df = df.drop(df[drop_col_list], axis=1)
+
+# Renaming the columns for better readability
+df.rename(columns = {"v1":"Target", "v2":"Text"}, inplace = True)
+df.head()
+
+target_counts = df.groupby('Target').size().reset_index(name='Count')
+print(target_counts)
+
+plt.figure(figsize=(12,8))
+fig = sns.countplot(x= df["Target"], palette=['teal','coral'])
+fig.set_title("Number of Spam and Ham")
+fig.set_xlabel("Classes")
+fig.set_ylabel("Number of Data points")
+plt.show(fig)
+
+
+df["No_of_Characters"] = df["Text"].apply(len)
+df["No_of_Words"] = df.apply(lambda row: nltk.word_tokenize(row["Text"]), axis=1).apply(len)
+df["No_of_Sentences"] = df.apply(lambda row: nltk.sent_tokenize(row["Text"]), axis=1).apply(len)
+
+df.describe().T
+
+df
+
+plt.figure(figsize=(12,8))
+fig = sns.pairplot(data=df, hue="Target",palette=['purple','yellow'])
+plt.suptitle("The relationship between no. characters, words, and sentences")
+plt.tight_layout()
+plt.show(fig)
